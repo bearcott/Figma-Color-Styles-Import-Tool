@@ -1,5 +1,6 @@
 import { setupMainThread } from "react-figma/rpc";
 import { parseToRgb } from "polished";
+import { flatten } from "lodash";
 
 // This plugin will open a window to prompt the user to enter a number, and
 // it will then create that many rectangles on the screen.
@@ -23,7 +24,6 @@ figma.showUI(__html__);
 const createSolidPaint = (color: string): SolidPaint => {
   if (!color) return null;
   const col = parseToRgb(color);
-  console.log(col);
   return {
     color: {
       r: col.red / 255,
@@ -34,16 +34,17 @@ const createSolidPaint = (color: string): SolidPaint => {
   };
 };
 
-const createColors = (key, val, path?: string) => {
+const createColors = (key, val, path?: string): PaintStyle[] => {
   if (typeof val === "string") {
     const style = figma.createPaintStyle();
     style.name = `${path || ""}/${key}`;
     style.paints = [createSolidPaint(val)];
-    return;
+    return [style];
   }
-  Object.entries(val).forEach(([k, v]) =>
-    createColors(k, v, `${path || ""}/${key}`)
-  );
+  return flatten(
+    Object.entries(val).map(([k, v]) =>
+      createColors(k, v, `${path || ""}/${key}`)
+    )
 };
 
 const generateColors = ({ code }) => {
@@ -51,8 +52,20 @@ const generateColors = ({ code }) => {
   console.log(JSON.parse(code));
   const allColors = JSON.parse(code);
 
-  Object.entries(allColors).forEach(([k, v]) => createColors(k, v));
-  console.log(figma.getLocalPaintStyles());
+  const localPaintStyles = figma.getLocalPaintStyles();
+
+  const colorThings = flatten(Object.entries(allColors).map(([k, v]) =>
+    createColors(k, v)
+  ));
+  
+  //set existing paints to new paints if they have the same name
+  colorThings.forEach(paint => {
+    const localPaint = localPaintStyles.find(x=> paint.name === x.name);
+    if (localPaint) {
+      localPaint.paints = paint.paints;
+      paint.remove();
+    }
+  })
 };
 
 // const createRectangles = (msg) => {
