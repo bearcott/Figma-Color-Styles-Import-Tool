@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "target": "es2017",
+    "moduleResolution": "node",
+    "jsx": "react",
+    "typeRoots": [
+      "./node_modules/@types",
+      "./node_modules/@figma"
+    ]
+  }
+}

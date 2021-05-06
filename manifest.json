@@ -1,0 +1,7 @@
+{
+  "name": "Code Color Import",
+  "id": "971874993093031648",
+  "api": "1.0.0",
+  "main": "dist/code.js",
+  "ui": "dist/ui.html"
+}

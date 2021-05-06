@@ -1,0 +1,18 @@
+<h2>Figma Code Color Import</h2>
+
+<textarea id="code"></textarea>
+<button id="create">Create</button>
+
+<button id="cancel">Cancel</button>
+<script>
+
+document.getElementById('create').onclick = () => {
+  const textbox = document.getElementById('code');
+  parent.postMessage({ pluginMessage: { type: 'create-colors', code: textbox.value } }, '*')
+}
+
+document.getElementById('cancel').onclick = () => {
+  parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*')
+}
+
+</script>
