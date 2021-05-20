@@ -6,6 +6,7 @@ export const App = () => {
   const [apiUrl, setApi] = React.useState("");
   const [textbox, setTextbox] = React.useState("");
   const [errorMsg, setErrorMsg] = React.useState("");
+  const [missingColors, setMissingColors] = React.useState([]);
 
   let debounce = null;
 
@@ -14,9 +15,13 @@ export const App = () => {
 
     // // this doesnt work
     onmessage = (e) => {
-      switch (e.data.ype) {
+      const msg = e.data.pluginMessage;
+      switch (msg.type) {
         case "error": {
-          setErrorMsg(e.data.message);
+          setErrorMsg(msg.message);
+        }
+        case "missingColors": {
+          setMissingColors(msg.colors);
         }
       }
     };
@@ -31,6 +36,8 @@ export const App = () => {
       setErrorMsg(e.message);
     }
   };
+
+  console.log(missingColors);
 
   return (
     <Wrapper>
@@ -75,6 +82,14 @@ export const App = () => {
         Create
       </button>
       {errorMsg && <p className="error">{errorMsg}</p>}
+      {missingColors.length > 0 && (
+        <p className="error">
+          there are {missingColors.length} colors not in the codebase:
+          {missingColors.map((x) => (
+            <div>{x}</div>
+          ))}
+        </p>
+      )}
     </Wrapper>
   );
 };
@@ -134,6 +149,7 @@ const Wrapper = styled.div`
   }
 
   .error {
+    padding: 10px;
     background: #f3ddd1;
     color: #ad5252;
   }

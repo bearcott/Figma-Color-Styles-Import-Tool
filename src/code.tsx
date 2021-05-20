@@ -90,11 +90,13 @@ const generateColors = ({ code }) => {
         console.log(e);
       }
     });
+    figma.ui.postMessage({
+      type: "missingColors",
+      colors: unmatchedLocalColors.map((x) => x.name),
+    });
   } catch (e) {
     console.log(e);
-    figma.ui.postMessage({
-      pluginMessage: { type: "error", message: e.message },
-    });
+    figma.ui.postMessage({ type: "error", message: e.message });
   }
 };
 
