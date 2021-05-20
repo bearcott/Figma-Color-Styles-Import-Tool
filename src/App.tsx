@@ -84,7 +84,7 @@ export const App = () => {
       {errorMsg && <p className="error">{errorMsg}</p>}
       {missingColors.length > 0 && (
         <p className="error">
-          there are {missingColors.length} colors not in the codebase:
+          <b>there are {missingColors.length} colors not in the codebase:</b>
           {missingColors.map((x) => (
             <div>{x}</div>
           ))}
