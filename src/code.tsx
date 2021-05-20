@@ -3,7 +3,7 @@ import { parseToRgb } from "polished";
 import { flatten } from "lodash";
 
 // This shows the HTML page in "ui.html".
-figma.showUI(__html__);
+figma.showUI(__html__, { width: 300, height: 350 });
 
 /* Sample data
 
@@ -65,9 +65,9 @@ const generateColors = ({ code }) => {
     //set existing paints to new paints if they have the same name
     // TODO: set description
     // NOTE: there could potentially be a prefix slash that exists for some colors but ends up in same directory
-    console.log(localPaintStyles, newColors);
 
-    const existingLocalColors = [];
+    const unmatchedLocalColors = [];
+    const matchingLocalColors = [];
 
     localPaintStyles.forEach((localPaint) => {
       const matchingNewPaint = newColors.find(
@@ -75,9 +75,19 @@ const generateColors = ({ code }) => {
       );
       if (matchingNewPaint) {
         localPaint.paints = matchingNewPaint.paints;
-        matchingNewPaint.remove();
+        matchingLocalColors.push(matchingNewPaint);
       } else {
-        existingLocalColors.push(localPaint);
+        unmatchedLocalColors.push(localPaint);
+      }
+    });
+
+    // for some reason some colors do not exist when trying to remove them?
+    // thats why its in a try catch block
+    matchingLocalColors.forEach((x) => {
+      try {
+        x.remove();
+      } catch (e) {
+        console.log(e);
       }
     });
   } catch (e) {
