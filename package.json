@@ -4,7 +4,7 @@
   "description": "Boilerplate app for react-figma",
   "main": "./src/code.tsx",
   "scripts": {
-    "webpack:watch": "webpack --watch"
+    "start": "webpack --watch"
   },
   "keywords": [
     "react",
@@ -27,6 +27,7 @@
     "polished": "^4.1.2",
     "prettier": "^2.2.1",
     "react": "^16.9.0",
+    "react-dom": "^17.0.2",
     "react-figma": "latest"
   },
   "devDependencies": {

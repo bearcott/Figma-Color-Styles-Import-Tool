@@ -1,4 +1,3 @@
-dist/
-node_modules/
-.idea
-*.tsbuildinfo
+yarn-error.log
+dist
+node_modules
