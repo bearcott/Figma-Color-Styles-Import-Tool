@@ -84,10 +84,12 @@ export const App = () => {
       {errorMsg && <p className="error">{errorMsg}</p>}
       {missingColors.length > 0 && (
         <p className="error">
-          <b>there are {missingColors.length} colors not in the codebase:</b>
-          {missingColors.map((x) => (
-            <div>{x}</div>
-          ))}
+          <b>codebase missing {missingColors.length} colors:</b>
+          <ul>
+            {missingColors.map((x) => (
+              <li key={x}>{x}</li>
+            ))}
+          </ul>
         </p>
       )}
     </Wrapper>
