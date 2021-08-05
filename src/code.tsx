@@ -17,9 +17,8 @@ figma.showUI(__html__, { width: 300, height: 350 });
 
 const generateColors = ({ code }: { code: string }) => {
   try {
-    const allColors = isJsonString(code)
-      ? JSON.parse(code)
-      : JSON.parse(JSON.stringify(code));
+    /* DANGER: using eval! It's fine here since ths tool is meant to help client side. */
+    const allColors = isJsonString(code) ? JSON.parse(code) : eval(`(${code})`);
     if (typeof allColors !== "object") {
       figma.ui.postMessage({
         type: MessageTypes.Error,
@@ -69,6 +68,10 @@ const generateColors = ({ code }: { code: string }) => {
     figma.ui.postMessage({
       type: MessageTypes.MissingColors,
       colors: unmatchedLocalColors.map((x) => x.name),
+    });
+    figma.ui.postMessage({
+      type: MessageTypes.Info,
+      message: "Done!",
     });
   } catch (e) {
     console.log(e);

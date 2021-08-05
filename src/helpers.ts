@@ -5,6 +5,7 @@ export enum MessageTypes {
   MissingColors = "MissingColors",
   InputColors = "InputColors",
   Error = "Error",
+  Info = "Info",
 }
 
 export const createSolidPaint = (color: string): SolidPaint => {

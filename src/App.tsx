@@ -1,12 +1,15 @@
+import { keyframes } from "@emotion/react";
 import styled from "@emotion/styled";
 import * as React from "react";
-import { MessageTypes } from "./helpers";
+import { isJsonString, MessageTypes } from "./helpers";
 
 export const App = () => {
   const [apiUrl, setApi] = React.useState("");
   const [textbox, setTextbox] = React.useState("");
   const [errorMsg, setErrorMsg] = React.useState("");
+  const [infoMsg, setInfoMsg] = React.useState("");
   const [missingColors, setMissingColors] = React.useState([]);
+  const [timeKey, setTimeKey] = React.useState(new Date());
 
   let debounce = null;
 
@@ -14,13 +17,19 @@ export const App = () => {
     // fetchData();
     onmessage = (e) => {
       const msg = e.data.pluginMessage;
-      console.log(msg);
       switch (msg.type) {
+        case MessageTypes.Info: {
+          setTimeKey(new Date());
+          setInfoMsg(msg.message);
+          return;
+        }
         case MessageTypes.Error: {
+          setTimeKey(new Date());
           setErrorMsg(msg.message);
           return;
         }
         case MessageTypes.MissingColors: {
+          setTimeKey(new Date());
           setMissingColors([...msg.colors]);
           return;
         }
@@ -67,7 +76,7 @@ export const App = () => {
         value={textbox}
         placeholder="JSON or object here..."
         onChange={(e) => {
-          console.log(typeof e.target.value);
+          console.log(JSON.stringify(e.target.value));
           setTextbox(e.target.value);
         }}
       />
@@ -76,7 +85,10 @@ export const App = () => {
         onClick={() => {
           parent.postMessage(
             {
-              pluginMessage: { type: MessageTypes.InputColors, code: textbox },
+              pluginMessage: {
+                type: MessageTypes.InputColors,
+                code: textbox,
+              },
             },
             "*"
           );
@@ -84,7 +96,16 @@ export const App = () => {
       >
         Create
       </button>
-      {errorMsg && <p className="error">{errorMsg}</p>}
+      {errorMsg && (
+        <p className="error" key={timeKey.toISOString()}>
+          {errorMsg}
+        </p>
+      )}
+      {infoMsg && (
+        <p className="info" key={timeKey.toISOString()}>
+          {infoMsg}
+        </p>
+      )}
       {missingColors.length > 0 && (
         <p className="error">
           <b>codebase missing {missingColors.length} colors:</b>
@@ -98,6 +119,15 @@ export const App = () => {
     </Wrapper>
   );
 };
+
+const fadeOut = keyframes`
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.7;
+  }
+`;
 
 const Wrapper = styled.div`
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
@@ -157,6 +187,13 @@ const Wrapper = styled.div`
     padding: 10px;
     background: #f3ddd1;
     color: #ad5252;
+    animation: ${fadeOut} 2s forwards;
+  }
+  .info {
+    padding: 10px;
+    background: #dce5ff;
+    color: #a5b5e2;
+    animation: ${fadeOut} 2s forwards;
   }
 `;
 
