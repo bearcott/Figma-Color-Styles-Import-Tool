@@ -163,6 +163,7 @@ const Wrapper = styled.div`
   textarea {
     color: #99acae;
     resize: vertical;
+    min-height: 100px;
   }
 
   button {
