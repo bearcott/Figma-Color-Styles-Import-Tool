@@ -1,7 +1,7 @@
 {
-  "name": "react-figma-boilerplate",
+  "name": "figma-color-import",
   "version": "1.0.0",
-  "description": "Boilerplate app for react-figma",
+  "description": "figma code to color import tool",
   "main": "./src/code.tsx",
   "scripts": {
     "start": "webpack --watch"
@@ -9,16 +9,11 @@
   "keywords": [
     "react",
     "react-figma",
-    "react-figma-boilerplate",
     "figma",
     "figma-plugins"
   ],
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/react-figma/react-figma-boilerplate.git"
-  },
-  "author": "Yaroslav Losev <losevyaroslav@gmail.com>",
-  "license": "ISC",
+  "author": "Benny Yan",
+  "license": "MIT",
   "dependencies": {
     "@emotion/react": "^11.4.0",
     "@emotion/styled": "^11.3.0",
