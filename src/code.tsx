@@ -10,6 +10,12 @@ figma.showUI(__html__, { width: 300, height: 350 });
   {"functional":{"text":{"muted":"#727272","default":"#3c3c3c","dark":"#14151a","border":{"border-default":"#dbdfea","border-muted":"#eceef4","input":{"disabled-bg":"#f5f6f7","disabled-text":"#747474"}},"background":{"default":"#f9fafc"},"table":{"header":"#f9fafc"}},"icon":{"disabled":"rgba(67, 90, 111, 0.3)","default":"#727272"},"border":{"border-default":"#dbdfea","border-muted":"#eceef4"}}}
 */
 
+export enum MessageTypes {
+  MissingColors = "MissingColors",
+  InputColors = "InputColors",
+  Error = "Error",
+}
+
 const createSolidPaint = (color: string): SolidPaint => {
   if (!color) return null;
   const col = parseToRgb(color);
@@ -23,6 +29,7 @@ const createSolidPaint = (color: string): SolidPaint => {
   };
 };
 
+/** recursive function to generate color objects in figma */
 const createColors = (key, val, path?: string): PaintStyle[] => {
   if (typeof val === "string") {
     try {
@@ -43,14 +50,29 @@ const createColors = (key, val, path?: string): PaintStyle[] => {
   );
 };
 
+function isJsonString(str) {
+  try {
+    JSON.parse(str);
+  } catch (e) {
+    return false;
+  }
+  return true;
+}
+
 const rmPrefixSlash = (name: string): string => {
   if (name[0] === "/") return name.substring(1);
   return name;
 };
 
-const generateColors = ({ code }) => {
+const generateColors = ({ code }: { code: string }) => {
   try {
-    const allColors = JSON.parse(code);
+    const allColors = isJsonString(code)
+      ? JSON.parse(code)
+      : JSON.parse(JSON.stringify(code));
+    if (typeof allColors !== "object") {
+      figma.ui.postMessage({ type: "error", message: "Invalid input!" });
+      return;
+    }
     const localPaintStyles = figma.getLocalPaintStyles();
 
     const newColors = flatten(
@@ -91,7 +113,7 @@ const generateColors = ({ code }) => {
       }
     });
     figma.ui.postMessage({
-      type: "missingColors",
+      type: MessageTypes.MissingColors,
       colors: unmatchedLocalColors.map((x) => x.name),
     });
   } catch (e) {
@@ -105,10 +127,10 @@ const generateColors = ({ code }) => {
 // };
 
 figma.ui.onmessage = (msg) => {
-  switch (msg.type) {
+  switch (msg.type as MessageTypes) {
     // case "change-api":
     //   changeApi(msg);
-    case "input-colors":
+    case MessageTypes.InputColors:
       generateColors(msg);
   }
 

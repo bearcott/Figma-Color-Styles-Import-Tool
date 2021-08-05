@@ -7,4 +7,4 @@ import reactDOM from "react-dom";
 
 render(<App />);
 
-reactDOM.render(<App />, document.getElementById("lol"));
+reactDOM.render(<App />, document.getElementById("main"));

@@ -1,8 +1,8 @@
 import styled from "@emotion/styled";
 import * as React from "react";
+import { MessageTypes } from "./code";
 
 export const App = () => {
-  const DEFAULT_API_URL = "https://app.pipe-dev.com/api/colors";
   const [apiUrl, setApi] = React.useState("");
   const [textbox, setTextbox] = React.useState("");
   const [errorMsg, setErrorMsg] = React.useState("");
@@ -11,19 +11,20 @@ export const App = () => {
   let debounce = null;
 
   React.useEffect(() => {
-    fetchData(DEFAULT_API_URL);
-
-    // // this doesnt work
+    // fetchData();
     onmessage = (e) => {
       const msg = e.data.pluginMessage;
       switch (msg.type) {
-        case "error": {
+        case MessageTypes.Error: {
           setErrorMsg(msg.message);
         }
-        case "missingColors": {
+        case MessageTypes.MissingColors: {
           setMissingColors(msg.colors);
         }
       }
+    };
+    return () => {
+      onmessage = null;
     };
   }, []);
 
@@ -37,8 +38,6 @@ export const App = () => {
     }
   };
 
-  console.log(missingColors);
-
   return (
     <Wrapper>
       <h1>Code → Color Import Tool 🎨</h1>
@@ -49,16 +48,16 @@ export const App = () => {
           onChange={(e) => {
             clearTimeout(debounce);
             debounce = setTimeout(() => {
-              fetchData(apiUrl || DEFAULT_API_URL);
+              fetchData(apiUrl);
             }, 500);
             setApi(e.target.value);
           }}
-          placeholder="https://app.pipe-dev.com/api/colors"
+          placeholder="http://example.com/colors.json"
         />
         <button
           className="refetch"
           onClick={() => {
-            fetchData(apiUrl || DEFAULT_API_URL);
+            fetchData(apiUrl);
           }}
         >
           Refetch
@@ -66,7 +65,9 @@ export const App = () => {
       </ApiContainer>
       <textarea
         value={textbox}
+        placeholder="JSON or object here..."
         onChange={(e) => {
+          console.log(typeof e.target.value);
           setTextbox(e.target.value);
         }}
       />
@@ -74,7 +75,9 @@ export const App = () => {
         className="create"
         onClick={() => {
           parent.postMessage(
-            { pluginMessage: { type: "input-colors", code: textbox } },
+            {
+              pluginMessage: { type: MessageTypes.InputColors, code: textbox },
+            },
             "*"
           );
         }}
