@@ -9,9 +9,16 @@ export const App = () => {
   const [errorMsg, setErrorMsg] = React.useState("");
   const [infoMsg, setInfoMsg] = React.useState("");
   const [missingColors, setMissingColors] = React.useState([]);
-  const [timeKey, setTimeKey] = React.useState(new Date());
+  const [shouldAnimate, setShouldAnimate] = React.useState(false);
 
   let debounce = null;
+
+  const startAnimation = () => {
+    setShouldAnimate(true);
+    setTimeout(() => {
+      setShouldAnimate(false);
+    }, 500);
+  };
 
   React.useEffect(() => {
     // fetchData();
@@ -19,17 +26,18 @@ export const App = () => {
       const msg = e.data.pluginMessage;
       switch (msg.type) {
         case MessageTypes.Info: {
-          setTimeKey(new Date());
+          startAnimation();
           setInfoMsg(msg.message);
+          setErrorMsg("");
           return;
         }
         case MessageTypes.Error: {
-          setTimeKey(new Date());
+          startAnimation();
           setErrorMsg(msg.message);
           return;
         }
         case MessageTypes.MissingColors: {
-          setTimeKey(new Date());
+          startAnimation();
           setMissingColors([...msg.colors]);
           return;
         }
@@ -43,6 +51,7 @@ export const App = () => {
       const data = await rawData.json();
       setTextbox(JSON.stringify(data));
     } catch (e) {
+      startAnimation();
       setErrorMsg(e.message);
     }
   };
@@ -97,17 +106,13 @@ export const App = () => {
         Create
       </button>
       {errorMsg && (
-        <p className="error" key={timeKey.toISOString()}>
-          {errorMsg}
-        </p>
+        <p className={`error ${shouldAnimate && "animate"}`}>{errorMsg}</p>
       )}
       {infoMsg && (
-        <p className="info" key={timeKey.toISOString()}>
-          {infoMsg}
-        </p>
+        <p className={`info ${shouldAnimate && "animate"}`}>{infoMsg}</p>
       )}
       {missingColors.length > 0 && (
-        <p className="error">
+        <p className={`error ${shouldAnimate && "animate"}`}>
           <b>codebase missing {missingColors.length} colors:</b>
           <ul>
             {missingColors.map((x) => (
@@ -122,16 +127,17 @@ export const App = () => {
 
 const fadeOut = keyframes`
   0% {
-    opacity: 1;
+    opacity: 0.5;
   }
   100% {
-    opacity: 0.7;
+    opacity: 1;
   }
 `;
 
 const Wrapper = styled.div`
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
     Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  overflow-x: hidden;
 
   h1 {
     font-size: 20px;
@@ -188,13 +194,14 @@ const Wrapper = styled.div`
     padding: 10px;
     background: #f3ddd1;
     color: #ad5252;
-    animation: ${fadeOut} 2s forwards;
   }
   .info {
     padding: 10px;
     background: #dce5ff;
     color: #a5b5e2;
-    animation: ${fadeOut} 2s forwards;
+  }
+  .animate {
+    animation: ${fadeOut} 0.2s forwards;
   }
 `;
 
