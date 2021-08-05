@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import * as React from "react";
-import { MessageTypes } from "./code";
+import { MessageTypes } from "./helpers";
 
 export const App = () => {
   const [apiUrl, setApi] = React.useState("");
@@ -14,17 +14,17 @@ export const App = () => {
     // fetchData();
     onmessage = (e) => {
       const msg = e.data.pluginMessage;
+      console.log(msg);
       switch (msg.type) {
         case MessageTypes.Error: {
           setErrorMsg(msg.message);
+          return;
         }
         case MessageTypes.MissingColors: {
-          setMissingColors(msg.colors);
+          setMissingColors([...msg.colors]);
+          return;
         }
       }
-    };
-    return () => {
-      onmessage = null;
     };
   }, []);
 
@@ -52,7 +52,7 @@ export const App = () => {
             }, 500);
             setApi(e.target.value);
           }}
-          placeholder="http://example.com/colors.json"
+          placeholder="http://test.com/colors.json"
         />
         <button
           className="refetch"

@@ -21,7 +21,10 @@ const generateColors = ({ code }: { code: string }) => {
       ? JSON.parse(code)
       : JSON.parse(JSON.stringify(code));
     if (typeof allColors !== "object") {
-      figma.ui.postMessage({ type: "error", message: "Invalid input!" });
+      figma.ui.postMessage({
+        type: MessageTypes.Error,
+        message: "Invalid input!",
+      });
       return;
     }
     const localPaintStyles = figma.getLocalPaintStyles();
@@ -69,7 +72,7 @@ const generateColors = ({ code }: { code: string }) => {
     });
   } catch (e) {
     console.log(e);
-    figma.ui.postMessage({ type: "error", message: e.message });
+    figma.ui.postMessage({ type: MessageTypes.Error, message: e.message });
   }
 };
 
