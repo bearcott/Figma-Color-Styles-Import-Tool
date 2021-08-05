@@ -2,11 +2,15 @@
 
 ![Demo Image](demo.png)
 
-This is a tool for importing json or JS objects into your Figma project as color styles. It also works with nested objects.
+This is a Figma plugin for importing nested json or JS objects into your Figma project as color styles.
 
-**Valid Inputs**
+## Installation
 
-The tool accepts the following inputs as long as the key, value pairs point to a color.
+Please refer to guides online for installing development figma plugins. (Will get this published onto figma plugin store soon)
+
+## Valid Inputs
+
+The tool accepts the following inputs as long as the key, value pairs point to a color. (RGB, HEX, HSL, etc)
 
 - JSON URL endpoint
 - JSON
