@@ -1,7 +1,7 @@
 {
-  "name": "figma-color-import",
+  "name": "figma-color-sync-import-tool",
   "version": "1.0.0",
-  "description": "figma code to color import tool",
+  "description": "tool for importing nested json or JS objects into your Figma project as color styles",
   "main": "./src/code.tsx",
   "scripts": {
     "start": "webpack --watch"
