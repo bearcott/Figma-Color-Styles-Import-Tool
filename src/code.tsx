@@ -5,6 +5,8 @@ import {
   createColors,
   rmPrefixSlash,
   MessageTypes,
+  insertIntoNestedPaintObject,
+  rgbToHex,
 } from "./helpers";
 
 // This shows the HTML page in "ui.html".
@@ -14,6 +16,25 @@ figma.showUI(__html__, { width: 320, height: 380 });
 
   {"functional":{"text":{"muted":"#727272","default":"#3c3c3c","dark":"#14151a","border":{"border-default":"#dbdfea","border-muted":"#eceef4","input":{"disabled-bg":"#f5f6f7","disabled-text":"#747474"}},"background":{"default":"#f9fafc"},"table":{"header":"#f9fafc"}},"icon":{"disabled":"rgba(67, 90, 111, 0.3)","default":"#727272"},"border":{"border-default":"#dbdfea","border-muted":"#eceef4"}}}
 */
+
+const outputColors = () => {
+  const localPaintStyles = figma.getLocalPaintStyles();
+  const result = {};
+  localPaintStyles.forEach((x) => {
+    const firstPaint = x.paints[0];
+    if (firstPaint.type === "SOLID") {
+      insertIntoNestedPaintObject(
+        result,
+        x.name.split("/").map((x) => x.split(" ").join("")),
+        rgbToHex(firstPaint.color)
+      );
+    }
+  });
+  figma.ui.postMessage({
+    type: MessageTypes.CopyText,
+    text: JSON.stringify(result),
+  });
+};
 
 const generateColors = ({ code }: { code: string }) => {
   try {
@@ -83,6 +104,10 @@ figma.ui.onmessage = (msg) => {
   switch (msg.type as MessageTypes) {
     case MessageTypes.InputColors:
       generateColors(msg);
+      break;
+    case MessageTypes.OutputColors:
+      outputColors();
+      break;
   }
 
   // Make sure to close the plugin when you're done. Otherwise the plugin will

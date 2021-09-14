@@ -4,9 +4,57 @@ import { parseToRgb } from "polished";
 export enum MessageTypes {
   MissingColors = "MissingColors",
   InputColors = "InputColors",
+  OutputColors = "OutputColors",
+  CopyText = "CopyText",
   Error = "Error",
   Info = "Info",
 }
+
+type PaintTree = { [key: string]: PaintTree } | PaintStyle;
+
+export const copyTextToClipboard = (text) =>
+  new Promise((res) => {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+
+    // Avoid scrolling to bottom
+    textArea.style.top = "0";
+    textArea.style.left = "0";
+    textArea.style.position = "fixed";
+
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+      res(document.execCommand("copy"));
+    } catch (err) {
+      res(false);
+      console.error("error:", err);
+    }
+
+    document.body.removeChild(textArea);
+  });
+
+const componentToHex = (c) => {
+  const hex = Math.round(c * 255).toString(16);
+  return hex.length == 1 ? "0" + hex : hex;
+};
+
+export const rgbToHex = ({ r, g, b }) => {
+  return `#${componentToHex(r)}${componentToHex(g)}${componentToHex(b)}`;
+};
+
+export const insertIntoNestedPaintObject = (
+  obj: PaintTree,
+  path: string[],
+  val: string
+) => {
+  const keys = path;
+  const lastKey = keys.pop();
+  const lastObj = keys.reduce((obj, key) => (obj[key] = obj[key] || {}), obj);
+  lastObj[lastKey] = val;
+};
 
 export const createSolidPaint = (color: string): SolidPaint => {
   if (!color) return null;

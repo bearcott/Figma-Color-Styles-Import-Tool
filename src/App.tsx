@@ -1,13 +1,14 @@
 import { keyframes } from "@emotion/react";
 import styled from "@emotion/styled";
 import * as React from "react";
-import { isJsonString, MessageTypes } from "./helpers";
+import { copyTextToClipboard, isJsonString, MessageTypes } from "./helpers";
 
 export const App = () => {
   const [apiUrl, setApi] = React.useState("");
   const [textbox, setTextbox] = React.useState("");
   const [errorMsg, setErrorMsg] = React.useState("");
   const [infoMsg, setInfoMsg] = React.useState("");
+  const [copied, setCopied] = React.useState(false);
   const [missingColors, setMissingColors] = React.useState([]);
   const [shouldAnimate, setShouldAnimate] = React.useState(false);
 
@@ -22,7 +23,7 @@ export const App = () => {
 
   React.useEffect(() => {
     // fetchData();
-    onmessage = (e) => {
+    onmessage = async (e) => {
       const msg = e.data.pluginMessage;
       switch (msg.type) {
         case MessageTypes.Info: {
@@ -39,6 +40,12 @@ export const App = () => {
         case MessageTypes.MissingColors: {
           startAnimation();
           setMissingColors([...msg.colors]);
+          return;
+        }
+        case MessageTypes.CopyText: {
+          const copyResult = await copyTextToClipboard(msg.text);
+          setCopied(true);
+          startAnimation();
           return;
         }
       }
@@ -73,7 +80,7 @@ export const App = () => {
           placeholder="http://test.com/colors.json"
         />
         <button
-          className="refetch"
+          className="secondary refetch"
           onClick={() => {
             fetchData(apiUrl);
           }}
@@ -90,7 +97,7 @@ export const App = () => {
         }}
       />
       <button
-        className="create"
+        className="primary import"
         onClick={() => {
           parent.postMessage(
             {
@@ -103,13 +110,31 @@ export const App = () => {
           );
         }}
       >
-        Create
+        Import Colors
+      </button>
+      <button
+        className="secondary export"
+        onClick={() => {
+          parent.postMessage(
+            {
+              pluginMessage: {
+                type: MessageTypes.OutputColors,
+              },
+            },
+            "*"
+          );
+        }}
+      >
+        Copy Local Colors
       </button>
       {errorMsg && (
         <p className={`error ${shouldAnimate && "animate"}`}>{errorMsg}</p>
       )}
       {infoMsg && (
         <p className={`info ${shouldAnimate && "animate"}`}>{infoMsg}</p>
+      )}
+      {copied && (
+        <p className={`info ${shouldAnimate && "animate"}`}>Copied!</p>
       )}
       {missingColors.length > 0 && (
         <p className={`error ${shouldAnimate && "animate"}`}>
@@ -173,21 +198,15 @@ const Wrapper = styled.div`
   }
 
   button {
-    background: #a78fdb;
-    color: #fff;
     border-radius: 4px;
     padding: 10px 20px;
     margin-right: 10px;
     width: 100%;
     font-weight: bold;
-    &:hover {
-      cursor: pointer;
-      background: #b58fdb;
-    }
   }
 
-  .create {
-    margin-top: 20px;
+  .export {
+    margin-top: 10px;
   }
 
   .error {
@@ -203,6 +222,23 @@ const Wrapper = styled.div`
   .animate {
     animation: ${fadeOut} 0.2s forwards;
   }
+
+  button.primary {
+    background: #a78fdb;
+    color: #fff;
+    &:hover {
+      cursor: pointer;
+      background: #b58fdb;
+    }
+  }
+  button.secondary {
+    background: #dacff2;
+    color: #7a6a9d;
+    &:hover {
+      cursor: pointer;
+      background: #e2cbff;
+    }
+  }
 `;
 
 const ApiContainer = styled.div`
@@ -212,16 +248,11 @@ const ApiContainer = styled.div`
   button {
     margin: 0;
   }
-  button {
+  button.refetch {
     padding: 0 20px;
     margin: 0;
     margin-left: 10px;
     width: auto;
-    background: #dacff2;
-    color: #7a6a9d;
-    &:hover {
-      background: #e2cbff;
-    }
   }
   align-items: stretch;
 `;
