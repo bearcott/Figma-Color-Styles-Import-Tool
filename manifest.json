@@ -1,7 +1,8 @@
 {
   "name": "Code Color Import",
-  "id": "971874993093031648",
+  "id": "1022265853609519600",
   "api": "1.0.0",
   "main": "dist/code.js",
-  "ui": "dist/ui.html"
+  "ui": "dist/ui.html",
+  "editorType": ["figma"]
 }
