@@ -1,5 +1,5 @@
 {
-  "name": "Code Color Import",
+  "name": "Styles JSON Tool",
   "id": "1022265853609519600",
   "api": "1.0.0",
   "main": "dist/code.js",
