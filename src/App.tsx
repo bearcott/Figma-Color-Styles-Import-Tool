@@ -129,7 +129,7 @@ export const App = () => {
           );
         }}
       >
-        🎨 Copy Local Color Styles
+        🎨 Copy Color Styles
       </button>
       <button
         className="secondary export"
@@ -144,7 +144,7 @@ export const App = () => {
           );
         }}
       >
-        🖌 Copy Local Text Styles
+        🖌 Copy Text Styles
       </button>
       {errorMsg && (
         <p className={`error ${shouldAnimate && "animate"}`}>❌ {errorMsg}</p>

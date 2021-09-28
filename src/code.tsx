@@ -58,6 +58,13 @@ const outputTextStyles = () => {
 
 const generateColors = ({ code }: { code: string }) => {
   try {
+    if (code.length === 0) {
+      figma.ui.postMessage({
+        type: MessageTypes.Error,
+        message: "Nothing to import",
+      });
+      return;
+    }
     /* DANGER: using eval! It's fine here since ths tool is meant to be entirely client side. */
     const allColors = isJsonString(code) ? JSON.parse(code) : eval(`(${code})`);
     if (typeof allColors !== "object") {
