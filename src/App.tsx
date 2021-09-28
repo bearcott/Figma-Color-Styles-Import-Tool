@@ -127,6 +127,21 @@ export const App = () => {
       >
         Copy Local Colors
       </button>
+      <button
+        className="secondary export"
+        onClick={() => {
+          parent.postMessage(
+            {
+              pluginMessage: {
+                type: MessageTypes.OutputTextStyles,
+              },
+            },
+            "*"
+          );
+        }}
+      >
+        Copy Local Text Styles
+      </button>
       {errorMsg && (
         <p className={`error ${shouldAnimate && "animate"}`}>{errorMsg}</p>
       )}

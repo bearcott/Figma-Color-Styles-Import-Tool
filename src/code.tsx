@@ -5,8 +5,9 @@ import {
   createColors,
   rmPrefixSlash,
   MessageTypes,
-  insertIntoNestedPaintObject,
+  insertIntoNestedObject,
   rgbToHex,
+  convertTextStyleToObject,
 } from "./helpers";
 
 // This shows the HTML page in "ui.html".
@@ -17,13 +18,16 @@ figma.showUI(__html__, { width: 320, height: 380 });
   {"functional":{"text":{"muted":"#727272","default":"#3c3c3c","dark":"#14151a","border":{"border-default":"#dbdfea","border-muted":"#eceef4","input":{"disabled-bg":"#f5f6f7","disabled-text":"#747474"}},"background":{"default":"#f9fafc"},"table":{"header":"#f9fafc"}},"icon":{"disabled":"rgba(67, 90, 111, 0.3)","default":"#727272"},"border":{"border-default":"#dbdfea","border-muted":"#eceef4"}}}
 */
 
+/** gets the first solid paint inside a PaintStyle and nests them
+ * TODO: support gradients
+ */
 const outputColors = () => {
   const localPaintStyles = figma.getLocalPaintStyles();
   const result = {};
   localPaintStyles.forEach((x) => {
     const firstPaint = x.paints[0];
     if (firstPaint.type === "SOLID") {
-      insertIntoNestedPaintObject(
+      insertIntoNestedObject<PaintStyle, string>(
         result,
         x.name.split("/").map((x) => x.split(" ").join("")),
         rgbToHex(firstPaint.color)
@@ -36,9 +40,25 @@ const outputColors = () => {
   });
 };
 
+const outputTextStyles = () => {
+  const localTextStyles = figma.getLocalTextStyles();
+  const result = {};
+  localTextStyles.forEach((x) => {
+    insertIntoNestedObject<TextStyle, {}>(
+      result,
+      x.name.split("/").map((x) => x.split(" ").join("")),
+      convertTextStyleToObject(x)
+    );
+  });
+  figma.ui.postMessage({
+    type: MessageTypes.CopyText,
+    text: JSON.stringify(result),
+  });
+};
+
 const generateColors = ({ code }: { code: string }) => {
   try {
-    /* DANGER: using eval! It's fine here since ths tool is meant to help client side. */
+    /* DANGER: using eval! It's fine here since ths tool is meant to be entirely client side. */
     const allColors = isJsonString(code) ? JSON.parse(code) : eval(`(${code})`);
     if (typeof allColors !== "object") {
       figma.ui.postMessage({
@@ -107,6 +127,9 @@ figma.ui.onmessage = (msg) => {
       break;
     case MessageTypes.OutputColors:
       outputColors();
+      break;
+    case MessageTypes.OutputTextStyles:
+      outputTextStyles();
       break;
   }
 
