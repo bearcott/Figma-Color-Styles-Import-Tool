@@ -1,8 +1,8 @@
-# Figma Color Styles Import Tool
+# Figma Styles JSON Tool
 
 ![Demo Image](demo.png)
 
-This is a Figma plugin for importing nested json or JS objects into your Figma project as color styles.
+This is a Figma plugin for importing/exporting nested json or JS objects to figma color and text styles.
 
 ## Installation
 
@@ -24,8 +24,8 @@ below is an example JS Object input:
     primary: {
       base: {
         default: "#5b81cb",
-        hover: "#94b0e5",
-        pressed: "#4d72ba",
+        hover: "rgb(25,41,21)",
+        pressed: "hsl(100,21,43)",
         disabled: "#81808D",
       },
     },
@@ -35,7 +35,7 @@ below is an example JS Object input:
 
 ## Using Export
 
-This tool also allows you to export local color and text styles as JSON to your clipboard.
+This tool also allows you to export local color and text styles as a nested JSON object to your clipboard.
 
 _Text styles_
 
