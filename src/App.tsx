@@ -1,7 +1,7 @@
 import { keyframes } from "@emotion/react";
 import styled from "@emotion/styled";
 import * as React from "react";
-import { copyTextToClipboard, isJsonString, MessageTypes } from "./helpers";
+import { copyTextToClipboard, MessageTypes } from "./helpers";
 
 export const App = () => {
   const [apiUrl, setApi] = React.useState("");
@@ -25,6 +25,10 @@ export const App = () => {
     // fetchData();
     onmessage = async (e) => {
       const msg = e.data.pluginMessage;
+      setErrorMsg("");
+      setInfoMsg("");
+      setMissingColors([]);
+      setCopied(false);
       switch (msg.type) {
         case MessageTypes.Info: {
           startAnimation();
@@ -43,7 +47,7 @@ export const App = () => {
           return;
         }
         case MessageTypes.CopyText: {
-          const copyResult = await copyTextToClipboard(msg.text);
+          await copyTextToClipboard(msg.text);
           setCopied(true);
           startAnimation();
           return;
@@ -65,7 +69,7 @@ export const App = () => {
 
   return (
     <Wrapper>
-      <h1>Code → Color Import Tool 🎨</h1>
+      <h1>Figma Styles JSON Tool</h1>
 
       <ApiContainer>
         <input
@@ -125,7 +129,7 @@ export const App = () => {
           );
         }}
       >
-        Copy Local Colors
+        🎨 Copy Local Color Styles
       </button>
       <button
         className="secondary export"
@@ -140,16 +144,16 @@ export const App = () => {
           );
         }}
       >
-        Copy Local Text Styles
+        🖌 Copy Local Text Styles
       </button>
       {errorMsg && (
-        <p className={`error ${shouldAnimate && "animate"}`}>{errorMsg}</p>
+        <p className={`error ${shouldAnimate && "animate"}`}>❌ {errorMsg}</p>
       )}
       {infoMsg && (
         <p className={`info ${shouldAnimate && "animate"}`}>{infoMsg}</p>
       )}
       {copied && (
-        <p className={`info ${shouldAnimate && "animate"}`}>Copied!</p>
+        <p className={`info ${shouldAnimate && "animate"}`}>✅ Copied!</p>
       )}
       {missingColors.length > 0 && (
         <p className={`error ${shouldAnimate && "animate"}`}>
@@ -174,6 +178,13 @@ const fadeOut = keyframes`
   }
 `;
 
+const Response = styled.div`
+  padding: 10px;
+  border: 1px solid #ececec;
+  border-radius: 4px;
+  margin-top: 10px;
+`;
+
 const Wrapper = styled.div`
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
     Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
@@ -181,7 +192,7 @@ const Wrapper = styled.div`
 
   h1 {
     font-size: 20px;
-    color: #474a52;
+    color: #333;
     margin: 0;
     margin-bottom: 20px;
   }
@@ -190,7 +201,7 @@ const Wrapper = styled.div`
   textarea,
   button,
   .error {
-    color: #474a52;
+    color: #333;
     border-radius: 4px;
     transition: background 0.2s ease;
     border: none;
@@ -198,16 +209,20 @@ const Wrapper = styled.div`
 
   input,
   textarea {
-    background: #ebf4f4;
+    background: #f7f7f7;
     padding: 10px;
     margin-bottom: 10px;
     width: 100%;
+    &:focus {
+      outline: none;
+      background: #f2f2f2;
+    }
     &:hover {
-      background: #e2f2f6;
+      background: #f2f2f2;
     }
   }
   textarea {
-    color: #99acae;
+    color: #b4b4b4;
     resize: vertical;
     min-height: 100px;
   }
@@ -224,34 +239,35 @@ const Wrapper = styled.div`
     margin-top: 10px;
   }
 
+  .error,
+  .info {
+    text-align: center;
+  }
   .error {
-    padding: 10px;
-    background: #f3ddd1;
-    color: #ad5252;
+    color: #ff5959;
   }
   .info {
-    padding: 10px;
-    background: #dce5ff;
-    color: #a5b5e2;
+    color: #888;
   }
   .animate {
     animation: ${fadeOut} 0.2s forwards;
   }
 
   button.primary {
-    background: #a78fdb;
-    color: #fff;
+    background: #4a9ff4;
+    color: #d1e8ff;
     &:hover {
       cursor: pointer;
-      background: #b58fdb;
+      background: #66b2ff;
     }
   }
   button.secondary {
-    background: #dacff2;
-    color: #7a6a9d;
+    /* border: 1px solid #ececec; */
+    background: #d1e8ff;
+    color: #4a9ff4;
     &:hover {
       cursor: pointer;
-      background: #e2cbff;
+      background: #c1dffd;
     }
   }
 `;
