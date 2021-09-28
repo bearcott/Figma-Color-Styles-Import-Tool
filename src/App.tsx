@@ -69,8 +69,6 @@ export const App = () => {
 
   return (
     <Wrapper>
-      <h1>Figma Styles JSON Tool</h1>
-
       <ApiContainer>
         <input
           value={apiUrl}

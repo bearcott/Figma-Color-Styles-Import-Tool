@@ -11,7 +11,7 @@ import {
 } from "./helpers";
 
 // This shows the HTML page in "ui.html".
-figma.showUI(__html__, { width: 320, height: 480 });
+figma.showUI(__html__, { width: 320, height: 360 });
 
 /* Sample data
 
