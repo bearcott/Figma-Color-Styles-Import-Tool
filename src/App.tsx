@@ -94,7 +94,7 @@ export const App = () => {
       </ApiContainer>
       <textarea
         value={textbox}
-        placeholder="JSON or object here..."
+        placeholder="JSON or JS object here..."
         onChange={(e) => {
           console.log(JSON.stringify(e.target.value));
           setTextbox(e.target.value);
